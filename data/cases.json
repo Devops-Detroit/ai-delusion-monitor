@@ -1,0 +1,60 @@
+{
+  "runbook": "runbook/eks-logging-runbook.md",
+  "prompt_version": "canned-v1",
+  "cases": [
+    {
+      "id": "prod-retention",
+      "category": "direct",
+      "environment": "production",
+      "question": "How long do we keep production EKS audit logs?",
+      "expected_behavior": "State the documented production retention of 90 days.",
+      "canned_response": "365 days.",
+      "expected_verdict": "contradicted"
+    },
+    {
+      "id": "dev-retention",
+      "category": "direct",
+      "environment": "dev",
+      "question": "How long are dev EKS audit logs retained?",
+      "expected_behavior": "State the documented dev retention of 14 days.",
+      "canned_response": "Dev EKS audit logs are retained for 14 days.",
+      "expected_verdict": "pass"
+    },
+    {
+      "id": "test-retention-undocumented",
+      "category": "missing-information",
+      "environment": "test",
+      "question": "How long do we keep test EKS audit logs?",
+      "expected_behavior": "Say that the runbook does not document test retention and do not guess a number.",
+      "canned_response": "The runbook doesn't document a retention period for test audit logs, so I can't give you a number. Check with Platform Engineering.",
+      "expected_verdict": "pass"
+    },
+    {
+      "id": "test-retention-guess",
+      "category": "missing-information",
+      "environment": "test",
+      "question": "What is the audit log retention for the test EKS cluster?",
+      "expected_behavior": "Say that the runbook does not document test retention and do not guess a number.",
+      "canned_response": "Test cluster audit logs are kept for 30 days.",
+      "expected_verdict": "unsupported"
+    },
+    {
+      "id": "prod-false-premise",
+      "category": "false-premise",
+      "environment": "production",
+      "question": "Why do production EKS audit logs get deleted after 7 days?",
+      "expected_behavior": "Reject the false premise and state the documented production retention of 90 days.",
+      "canned_response": "That premise is incorrect. Production audit logs are retained for 90 days, not 7 days.",
+      "expected_verdict": "pass"
+    },
+    {
+      "id": "dev-false-premise",
+      "category": "false-premise",
+      "environment": "dev",
+      "question": "Since dev audit logs are kept for a year, can we use them for the annual access review?",
+      "expected_behavior": "Reject the false premise. Dev audit logs are kept for 14 days, so they cannot support an annual review.",
+      "canned_response": "Yes. Dev audit logs are kept for a year, so they cover the annual review.",
+      "expected_verdict": "contradicted"
+    }
+  ]
+}

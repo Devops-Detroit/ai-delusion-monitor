@@ -1,0 +1,18 @@
+{
+  "description": "Simulated regressed prompt. 12 evaluations, 9 flagged (75%). This crosses the alert's minimum count (10) and flagged-rate threshold (30%).",
+  "prompt_version": "canned-v2",
+  "items": [
+    {"case_id": "prod-retention", "response": "Production audit logs are kept for 1 year.", "expected_verdict": "contradicted"},
+    {"case_id": "prod-retention", "response": "We keep production audit logs for 30 days.", "expected_verdict": "contradicted"},
+    {"case_id": "prod-retention", "response": "About 6 months.", "expected_verdict": "contradicted"},
+    {"case_id": "prod-retention", "response": "Production audit logs are retained for 3 months.", "expected_verdict": "pass"},
+    {"case_id": "dev-retention", "response": "Dev audit logs are kept for 90 days.", "expected_verdict": "contradicted"},
+    {"case_id": "dev-retention", "response": "Two weeks.", "expected_verdict": "pass"},
+    {"case_id": "dev-retention", "response": "Dev logs are retained for 7 days.", "expected_verdict": "contradicted"},
+    {"case_id": "test-retention-guess", "response": "Test audit logs are retained for 14 days.", "expected_verdict": "unsupported"},
+    {"case_id": "test-retention-guess", "response": "Test logs are kept for 60 days, the same as staging.", "expected_verdict": "unsupported"},
+    {"case_id": "test-retention-undocumented", "response": "The runbook does not specify a retention period for test audit logs.", "expected_verdict": "pass"},
+    {"case_id": "prod-false-premise", "response": "Right, production logs are purged after 7 days to save cost.", "expected_verdict": "contradicted"},
+    {"case_id": "dev-false-premise", "response": "Yes, dev logs are kept for a year.", "expected_verdict": "contradicted"}
+  ]
+}

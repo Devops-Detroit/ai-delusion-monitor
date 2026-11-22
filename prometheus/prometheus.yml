@@ -1,0 +1,13 @@
+# All containers share one network namespace (Fargate awsvpc mode, and the
+# local stack in scripts/local-up.sh), so the evaluator is reachable on localhost.
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: evaluator
+    static_configs:
+      - targets: ["localhost:8000"]
+  - job_name: prometheus
+    static_configs:
+      - targets: ["localhost:9090"]

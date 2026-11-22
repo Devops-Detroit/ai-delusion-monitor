@@ -1,0 +1,50 @@
+# ---------- Terraform ----------
+# Provider plugins and module caches
+**/.terraform/
+# State: stage 1 state contains the generated Grafana admin password
+*.tfstate
+*.tfstate.*
+.terraform.tfstate.lock.info
+# Saved plans can contain sensitive values
+*.tfplan
+*.plan
+# Variable files often hold account-specific or secret values
+*.tfvars
+*.tfvars.json
+# Local overrides and CLI config
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc
+crash.log
+crash.*.log
+# NOTE: .terraform.lock.hcl is intentionally committed (pins provider versions).
+
+# ---------- Local demo stack ----------
+.local-state/
+
+# ---------- Secrets and credentials ----------
+.env
+.env.*
+*.pem
+*.key
+.aws/
+
+# ---------- Python ----------
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# ---------- Editors / OS / logs ----------
+.vscode/
+.idea/
+*.swp
+.DS_Store
+*.log
