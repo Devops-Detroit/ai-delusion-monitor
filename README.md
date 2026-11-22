@@ -28,7 +28,7 @@ V1 runs with **no LLM and no API key**. A deterministic evaluator grades canned 
 | `infra/stage1-aws/` | Terraform stage 1: VPC, ECR, IAM, CloudWatch Logs, ECS cluster, task definition, service |
 | `infra/stage2-grafana/` | Terraform stage 2: Prometheus data source, folder, dashboard, contact point, alert rule |
 | `scripts/` | `push-images.sh`, `tunnel.sh` (SSM), `local-up.sh` / `local-down.sh` |
-| `docs/` | Architecture and workflow diagrams (`.drawio.svg`, editable in draw.io) |
+| `docs/` | Architecture and workflow diagrams (`.drawio.svg`, editable in draw.io), and [`MANUAL_SETUP.md`](docs/MANUAL_SETUP.md): a step-by-step AWS CLI guide to building the stack without Terraform |
 
 ## Test cases and verdicts
 
@@ -116,6 +116,8 @@ make local-down
 ```
 
 ## 2. Deploy to AWS (ECS Fargate)
+
+> **Prefer to build it by hand?** [docs/MANUAL_SETUP.md](docs/MANUAL_SETUP.md) creates the same AWS resources one service at a time with the AWS CLI (console equivalents included), and covers the Grafana setup and a manual teardown.
 
 **Prerequisites:**
 

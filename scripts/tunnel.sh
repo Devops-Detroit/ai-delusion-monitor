@@ -15,9 +15,10 @@ case "${1:-grafana}" in
 esac
 LOCAL_PORT="${2:-$PORT}"
 TF="terraform -chdir=infra/stage1-aws"
-REGION=$($TF output -raw region)
-CLUSTER=$($TF output -raw cluster_name)
-SERVICE=$($TF output -raw service_name)
+# These come from stage 1 outputs unless you export them (needed for a stack built by hand).
+REGION="${REGION:-$($TF output -raw region)}"
+CLUSTER="${CLUSTER:-$($TF output -raw cluster_name)}"
+SERVICE="${SERVICE:-$($TF output -raw service_name)}"
 
 TASK_ARN=$(aws ecs list-tasks --region "$REGION" --cluster "$CLUSTER" --service-name "$SERVICE" \
   --desired-status RUNNING --query 'taskArns[0]' --output text)

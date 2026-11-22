@@ -9,9 +9,12 @@ TAG="${IMAGE_TAG:-v1}"
 GRAFANA_UPSTREAM="${GRAFANA_UPSTREAM:-grafana/grafana:12.2.0}"
 TF="terraform -chdir=infra/stage1-aws"
 
-REGION=$($TF output -raw region)
-REGISTRY=$($TF output -raw ecr_registry)
-repo() { $TF output -json ecr_repositories | python3 -c "import json,sys; print(json.load(sys.stdin)['$1'])"; }
+# REGION and REGISTRY come from stage 1 outputs. Export them yourself to skip
+# Terraform, for example on a stack built by hand (docs/MANUAL_SETUP.md).
+REGION="${REGION:-$($TF output -raw region)}"
+REGISTRY="${REGISTRY:-$($TF output -raw ecr_registry)}"
+NAME="${NAME:-ai-delusion-monitor}"
+repo() { echo "$REGISTRY/$NAME/$1"; }
 
 aws ecr get-login-password --region "$REGION" | docker login --username AWS --password-stdin "$REGISTRY"
 
@@ -23,4 +26,4 @@ docker tag "$GRAFANA_UPSTREAM" "$(repo grafana):$TAG"
 for r in evaluator prometheus grafana; do
   docker push "$(repo $r):$TAG"
 done
-echo "Pushed tag $TAG. Next: terraform -chdir=infra/stage1-aws apply -var create_service=true"
+echo "Pushed tag $TAG. Next: terraform -chdir=infra/stage1-aws apply -var create_service=true (or register the task definition by hand)"
