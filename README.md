@@ -28,7 +28,7 @@ V1 runs with **no LLM and no API key**. A deterministic evaluator grades canned 
 | `infra/stage1-aws/` | Terraform stage 1: VPC, ECR, IAM, CloudWatch Logs, ECS cluster, task definition, service |
 | `infra/stage2-grafana/` | Terraform stage 2: Prometheus data source, folder, dashboard, contact point, alert rule |
 | `scripts/` | `push-images.sh`, `tunnel.sh` (SSM), `local-up.sh` / `local-down.sh` |
-| `docs/` | Architecture and workflow diagrams (`.drawio.svg`, editable in draw.io), and [`MANUAL_SETUP.md`](docs/MANUAL_SETUP.md): a step-by-step AWS CLI guide to building the stack without Terraform |
+| `docs/` | Architecture and workflow diagrams (`.drawio.svg`, editable in draw.io); [`MANUAL_SETUP.md`](docs/MANUAL_SETUP.md), a step-by-step AWS CLI guide to building the stack without Terraform; [`LLM_INTEGRATION.md`](docs/LLM_INTEGRATION.md), possible next steps for the LLM milestone |
 
 ## Test cases and verdicts
 
@@ -300,14 +300,9 @@ If Grafana is already gone, skip the stage 2 destroy and delete `infra/stage2-gr
 
 ## Follow-up milestone: real LLM integration
 
-V2 replaces canned answers with live model answers. The deterministic checker, metrics, dashboard, and alert stay the same.
+V2 would replace canned answers with live model answers. It would run the same six questions against two prompt versions (`prompt-a` and `prompt-b`), keeping the model and runbook fixed, and compare their flagged-answer rates. The evaluator, metrics, dashboard, and alert stay the same.
 
-- **The experiment:** the same six questions in `data/cases.json` run against **two prompt versions**, `prompt-a` (baseline) and `prompt-b` (for example, "answer only from the runbook; say when something is not documented"). These names are already in the `prompt_version` allowlist.
-- **Held fixed:** the **model** (one pinned model ID, `temperature=0`, fixed max tokens) and the **runbook** (the same file passed as context, recorded by content hash). The only variable is the system prompt. A change in flagged rate between `prompt-a` and `prompt-b` is therefore attributable to the prompt.
-- **How it runs:** a new `generate` command (or a scheduled ECS task) sends each question to the model with the runbook and the selected prompt. It then POSTs the answer to `/evaluate` with `prompt_version=prompt-a|prompt-b`. N repetitions per prompt version (for example, 5 × 6 = 30) clear the alert's minimum count of 10.
-- **Secrets:** the API key goes in SSM or Secrets Manager and is injected into the generator only. The evaluator never needs it.
-- **Logging:** model ID, prompt version, and runbook hash go into the evaluation log, not into metric labels.
-- **Not in V1:** answers the regex checker can't parse, such as free-form paraphrase, would need an LLM-as-judge or an entailment check. In V2, measure and log those as `unsupported` before adding a judge.
+This is planning only, and nothing is built yet. See **[docs/LLM_INTEGRATION.md](docs/LLM_INTEGRATION.md)** for the experiment design, phased next steps, risks, and open questions.
 
 ## Assumptions and limits
 

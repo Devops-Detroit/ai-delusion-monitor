@@ -41,4 +41,4 @@ make local-down
 ## Rules
 - **Never `terraform apply` or `destroy` against AWS, or push to ECR, without the user's explicit approval in the current conversation.** `validate`, `fmt`, and local-only stage 2 runs are fine.
 - When you change cases or the batch, keep `expected_verdict` correct. `make test` enforces it.
-- Real LLM integration is the follow-up milestone (README, "Follow-up milestone"). The model and runbook stay fixed, and `prompt-a` is compared with `prompt-b`.
+- Real LLM integration is the follow-up milestone, in the planning stage only: see `docs/LLM_INTEGRATION.md`. The model and runbook stay fixed, and `prompt-a` is compared with `prompt-b`.
