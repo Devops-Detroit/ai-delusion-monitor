@@ -4,17 +4,17 @@ Tracks when an AI assistant **contradicts** its source material or makes claims 
 
 V1 runs with **no LLM and no API key**. A deterministic evaluator grades canned answers to six questions about a fictional EKS logging runbook. Each verdict is logged and counted in Prometheus. Grafana graphs the flagged-answer rate and alerts on it.
 
-```
-             ECS service (desired count 1) ─ one Fargate task, awsvpc, shared localhost
- ┌─────────────────────────────────────────────────────────────────────────────┐
- │  evaluator :8000  ◄─scrape 15s─  prometheus :9090  ◄─query─  grafana :3000  │
- │      ▲  (/evaluate, /metrics, /alerts)                       │   │           │
- │      └──────────────── alert webhook  http://localhost:8000/alerts           │
- └──────────────────────────────▲──────────────────────────────────────────────┘
-   all bind 127.0.0.1           │ SSM port-forward (ECS Exec channel)
-   SG: no ingress               │
-                       laptop / Terraform runner: localhost:3000, :9090, :8000
-```
+## Diagrams
+
+### Architecture
+
+![AI Delusion Monitor architecture: your machine runs Terraform and an SSM tunnel; in AWS, one Fargate task runs the evaluator, Prometheus, and Grafana on a shared localhost inside a VPC whose security group has no inbound rules](docs/architecture.drawio.svg)
+
+### Workflow
+
+![AI Delusion Monitor workflow: top lane shows the six bootstrap steps; bottom lane shows an answer flowing through the evaluator, checker, verdict, logs and metrics, Prometheus, Grafana, and the alert webhook](docs/workflow.drawio.svg)
+
+**Editing the diagrams.** Each file is an SVG with the draw.io diagram embedded. GitHub shows the image, and draw.io opens the same file as an editable diagram. Open it at [app.diagrams.net](https://app.diagrams.net) (*File → Open from → Device*) or with the VS Code *Draw.io Integration* extension. When you save, draw.io updates the picture and the embedded diagram together, so keep the `.drawio.svg` name.
 
 ## Contents
 
@@ -28,6 +28,7 @@ V1 runs with **no LLM and no API key**. A deterministic evaluator grades canned 
 | `infra/stage1-aws/` | Terraform stage 1: VPC, ECR, IAM, CloudWatch Logs, ECS cluster, task definition, service |
 | `infra/stage2-grafana/` | Terraform stage 2: Prometheus data source, folder, dashboard, contact point, alert rule |
 | `scripts/` | `push-images.sh`, `tunnel.sh` (SSM), `local-up.sh` / `local-down.sh` |
+| `docs/` | Architecture and workflow diagrams (`.drawio.svg`, editable in draw.io) |
 
 ## Test cases and verdicts
 
