@@ -4,7 +4,30 @@ This guide builds the same V1 stack as `infra/stage1-aws` and `infra/stage2-graf
 
 > **Use one method per stack.** Don't build by hand and then run `terraform apply` in the same account and region with the same names. Terraform would try to create resources that already exist and fail. To switch methods, tear the stack down first (see [Teardown](#12-teardown)).
 
-**What you'll create** (see the [architecture diagram](architecture.drawio.svg)):
+### Architecture
+
+Steps 1–9 create the AWS resources shown here: ECR, Parameter Store, IAM, CloudWatch Logs, the VPC and security group, and the ECS service with its task. SSM Session Manager is a managed AWS service; step 10 only uses it.
+
+![AI Delusion Monitor architecture: your machine runs the AWS CLI, Docker, and an SSM tunnel; in AWS, ECR, SSM Parameter Store, IAM, and CloudWatch Logs support one Fargate task that runs the evaluator, Prometheus, and Grafana on a shared localhost inside a VPC whose security group has no inbound rules](architecture.drawio.svg)
+
+### Workflow
+
+![AI Delusion Monitor workflow: top lane shows the bootstrap order; bottom lane shows an answer flowing through the evaluator, checker, verdict, logs and metrics, Prometheus, Grafana, and the alert webhook](workflow.drawio.svg)
+
+The top lane shows the Terraform path. It maps to this guide like this:
+
+| Diagram step | Terraform path | This guide |
+|---|---|---|
+| 1 | Stage 1 apply (`create_service=false`) | Steps 1–6 |
+| 2 | `push-images.sh` | Step 7 |
+| 3 | Stage 1 apply (`create_service=true`) | Step 8 (task definition), Step 9 (service) |
+| 4 | ECS starts the task | End of step 9 |
+| 5 | `tunnel.sh grafana` | Step 10 |
+| 6 | Stage 2 apply | Step 11 |
+
+The bottom lane is the same however you deploy. It's what you verify after step 11.
+
+**What you'll create:**
 
 | # | Service | Resources |
 |---|---|---|
