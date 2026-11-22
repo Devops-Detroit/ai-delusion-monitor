@@ -32,6 +32,51 @@ Prompt ideas:
 
 ---
 
+## To-do list
+
+Actionable items, in rough order. Check them off as they land.
+
+- [ ] **Add a GitHub Actions workflow that runs `make check`.** *This doesn't depend on the LLM work and can be done now.*
+  - **File:** `.github/workflows/check.yml`
+  - **Triggers:** every push to `main` and every pull request.
+  - **Steps:** check out the repo → set up Python 3.12 (matches the evaluator image) → set up Terraform (pin the version used locally) → `make venv` → `make check`.
+  - **What `make check` covers:** 40 pytest tests, `terraform fmt -check`, `terraform validate` on both stages (`init -backend=false`, so no AWS credentials or state are needed), and `bash -n` on the scripts.
+  - **Requirements:** no secrets or AWS credentials. It must stay that way, so live model calls (Phase 6) go in a separate, manually started workflow.
+  - **Both repos:** the workflow file is part of the repo, so pushing it to `kingmellow08` and `Devops-Detroit` enables it in both. Check that Actions is allowed in the `Devops-Detroit` organization settings.
+  - **Afterwards:** add a status badge to the README, and optionally make the check required before merging to `main`.
+  - Sketch:
+    ```yaml
+    name: check
+    on:
+      push:
+        branches: [main]
+      pull_request:
+    permissions:
+      contents: read
+    jobs:
+      check:
+        runs-on: ubuntu-latest
+        steps:
+          - uses: actions/checkout@v4
+          - uses: actions/setup-python@v5
+            with:
+              python-version: "3.12"
+          - uses: hashicorp/setup-terraform@v3
+            with:
+              terraform_version: "1.16.5"   # match your local version
+              terraform_wrapper: false
+          - run: make venv
+          - run: make check
+    ```
+- [ ] Phase 0: decide on model access (Bedrock or a direct API), the model, the repetition count, and the budget.
+- [ ] Phase 1: version the prompts and runbook (files, hashes, run manifest).
+- [ ] Phase 2: build the `generate` command.
+- [ ] Phase 3: run the generator in AWS.
+- [ ] Phase 4: measure and handle checker gaps on free-form answers.
+- [ ] Phase 5: add the prompt-A-vs-B comparison panel and generator health metrics.
+- [ ] Phase 6: add recorded-answer fixtures and a fake model client, so CI never needs a key.
+- [ ] Phase 7 (optional): keep metric history.
+
 ## Possible next steps
 
 These are grouped into phases. Each phase is useful on its own, and later phases can be skipped.
@@ -100,7 +145,7 @@ Real model answers are wordier and less predictable than the canned ones. The V1
 
 - Record real model answers once and save them as fixtures, for example `data/recorded/prompt-a.json`. Replay them in tests, so `make check` never needs a key or network access.
 - Add a fake model client for unit tests of the generator: retries, timeouts, the call cap.
-- Add a GitHub Actions workflow that runs `make check` on every push. Run live model calls only when started manually.
+- The `make check` workflow from the [to-do list](#to-do-list) runs these on every push. Live model calls belong in a separate workflow that only runs when started manually.
 
 ### Phase 7 (optional): keep the history
 
